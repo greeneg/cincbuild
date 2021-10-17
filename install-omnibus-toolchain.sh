@@ -18,40 +18,17 @@ set -e
 set -u
 set -o pipefail
 
+date
 echo "PREPPING ENVIRONMENT"
-
-# build environment cleanup
-CINC_CLIENT_SERVICE=0
-if systemctl list-units --type service | grep -v UNIT | head -n -7 | grep cinc-client; then
-  CINC_CLIENT_SERVICE=1
-fi
-CINC_CLIENT_TIMER=0
-if systemctl list-units --type timer | grep -v UNIT | head -n -7 | grep cinc-client; then
-  CINC_CLIENT_TIMER=1
-fi
-
-if [[ "$CINC_CLIENT_SERVICE" == 1 ]]; then
-  sudo systemctl stop cinc-client
-fi
-if [[ "$CINC_CLIENT_TIMER" == 1 ]]; then
-  sudo systemctl stop cinc-client.timer
-fi
 
 # package checks
 OMNIBUS_TOOLCHAIN_PKG=0
 if dpkg-query -s omnibus-toolchain >/dev/null 2>&1; then
   OMNIBUS_TOOLCHAIN_PKG=1
 fi
-CINC_PKG=0
-if dpkg-query -s cinc >/dev/null 2>&1; then
-  CINC_PKG=1
-fi
 
 if [[ "$OMNIBUS_TOOLCHAIN_PKG" == 1 ]]; then
   sudo apt remove omnibus-toolchain -y
-fi
-if [[ "$CINC_PKG" == 1 ]]; then
-  sudo apt remove cinc -y
 fi
 
 echo "PREP WORK COMPLETED!"

@@ -21,7 +21,30 @@ set -e
 set -u
 set -o pipefail
 
+date
 echo "PREPPING ENVIRONMENT"
+
+# build environment cleanup
+CINC_CLIENT_SERVICE=0
+if systemctl list-units --type service | grep -v UNIT | head -n -7 | grep cinc-client; then
+  CINC_CLIENT_SERVICE=1
+fi
+CINC_CLIENT_TIMER=0
+if systemctl list-units --type timer | grep -v UNIT | head -n -7 | grep cinc-client; then
+  CINC_CLIENT_TIMER=1
+fi
+
+if [[ "$CINC_CLIENT_SERVICE" == 1 ]]; then
+  sudo systemctl stop cinc-client
+fi
+if [[ "$CINC_CLIENT_TIMER" == 1 ]]; then
+  sudo systemctl stop cinc-client.timer
+fi
+
+CINC_PKG=0
+if dpkg-query -s cinc >/dev/null 2>&1; then
+  CINC_PKG=1
+fi
 if [[ "$CINC_PKG" == 1 ]]; then
   sudo apt remove cinc -y
 fi
@@ -30,11 +53,20 @@ echo "PREP WORK COMPLETED!"
 
 # Cinc $VERSION
 cd
+echo "==============================================================================="
+echo " PREPPING FOR BUILD: cinc, $VERSION"
+echo "==============================================================================="
 rm -rfv $HOME/cinc-full-$VERSION $HOME/cinc-full-$VERSION.tar.xz
 sudo rm -rfv /opt/cinc
 sudo install -v -d -m 755 -o omnibus -g omnibus /opt/cinc
+echo "==============================================================================="
+echo " DOWNLOADING SOURCES: cinc, $VERSION"
+echo "==============================================================================="
 curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$VERSION.tar.xz --output cinc-full-$VERSION.tar.xz
-tar -xJf cinc-full-$VERSION.tar.xz
+echo "==============================================================================="
+echo " UNPACKING SOURCES: cinc, $VERSION"
+echo "==============================================================================="
+tar -xvJf cinc-full-$VERSION.tar.xz
 cd cinc-full-$VERSION/cinc-$VERSION/omnibus/
 exit 0
 
