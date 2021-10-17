@@ -13,13 +13,15 @@ if [[ "$ID" -ne 'raspbian' ]]; then echo "This script only runs on Raspbian! Exi
 if [[ "$(id -u -n)" -ne 'omnibus' ]]; then echo "This script needs to be run under the 'omnibus' user! Exiting" && exit 1; fi
 
 # We need this fed in to work
-if [ -z "$VERSION" ]; then echo "\$VERSION is unset! Exiting"; exit 1; fi
+if [[ -z "$CINC_VERSION" ]]; then echo "\$CINC_VERSION is unset! Exiting"; exit 1; fi
 
-# xtrace, nounset, exit on failures
-set -x
+# nounset, exit on failures
 set -e
 set -u
 set -o pipefail
+
+DEBUG=${DEBUG:-}
+if [[ -n "$DEBUG" ]]; then set -x; fi
 
 date
 echo "PREPPING ENVIRONMENT"
@@ -51,34 +53,34 @@ fi
 
 echo "PREP WORK COMPLETED!"
 
-# Cinc $VERSION
+# Cinc $CINC_VERSION
 cd
 echo "==============================================================================="
-echo " PREPPING FOR BUILD: cinc, $VERSION"
+echo " PREPPING FOR BUILD: cinc, $CINC_VERSION"
 echo "==============================================================================="
-rm -rfv $HOME/cinc-full-$VERSION $HOME/cinc-full-$VERSION.tar.xz
+rm -rfv $HOME/cinc-full-$CINC_VERSION $HOME/cinc-full-$CINC_VERSION.tar.xz
 sudo rm -rfv /opt/cinc
 sudo install -v -d -m 755 -o omnibus -g omnibus /opt/cinc
 echo "==============================================================================="
-echo " DOWNLOADING SOURCES: cinc, $VERSION"
+echo " DOWNLOADING SOURCES: cinc, $CINC_VERSION"
 echo "==============================================================================="
-curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$VERSION.tar.xz --output cinc-full-$VERSION.tar.xz
+curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$CINC_VERSION.tar.xz --output cinc-full-$CINC_VERSION.tar.xz
 echo "==============================================================================="
-echo " UNPACKING SOURCES: cinc, $VERSION"
+echo " UNPACKING SOURCES: cinc, $CINC_VERSION"
 echo "==============================================================================="
-tar -xvJf cinc-full-$VERSION.tar.xz
-cd cinc-full-$VERSION/cinc-$VERSION/omnibus/
+tar -xvJf cinc-full-$CINC_VERSION.tar.xz
+cd cinc-full-$CINC_VERSION/cinc-$CINC_VERSION/omnibus/
 exit 0
 
 bundle lock --update=chef
 bundle config set without 'development docs debug'
 bundle install --path=.bundle
 bundle exec omnibus build cinc -l internal
-cp ~/cinc-full-$VERSION/cinc-$VERSION/omnibus/pkg/cinc*deb ~/
-cp ~/cinc-full-$VERSION/cinc-$VERSION/omnibus/pkg/cinc*deb /tmp/
-sudo cp ~/cinc-full-$VERSION/cinc-$VERSION/omnibus/pkg/cinc*deb /root/
+cp ~/cinc-full-$CINC_VERSION/cinc-$CINC_VERSION/omnibus/pkg/cinc*deb ~/
+cp ~/cinc-full-$CINC_VERSION/cinc-$CINC_VERSION/omnibus/pkg/cinc*deb /tmp/
+sudo cp ~/cinc-full-$CINC_VERSION/cinc-$CINC_VERSION/omnibus/pkg/cinc*deb /root/
 
 chmod 644 /tmp/*deb
 
-echo "$VERSION Complete!"
+echo "$CINC_VERSION Complete!"
 date
