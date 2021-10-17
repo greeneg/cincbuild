@@ -58,13 +58,20 @@ cd
 echo "==============================================================================="
 echo " PREPPING FOR BUILD: cinc, $CINC_VERSION"
 echo "==============================================================================="
+# to best allow us to use upstream's releases, don't use the cinc-full build, but rather
+# use the git sources of Chef directly
 rm -rfv $HOME/cinc-full-$CINC_VERSION $HOME/cinc-full-$CINC_VERSION.tar.xz
 sudo rm -rfv /opt/cinc
 sudo install -v -d -m 755 -o omnibus -g omnibus /opt/cinc
+mkdir -pv $HOME/cinc-full-$CINC_VERSION
 echo "==============================================================================="
 echo " DOWNLOADING SOURCES: cinc, $CINC_VERSION"
 echo "==============================================================================="
-curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$CINC_VERSION.tar.xz --output cinc-full-$CINC_VERSION.tar.xz
+cd $HOME/cinc-full-$CINC_VERSION
+git clone https://github.com/chef/chef.git $HOME/cinc-full-$CINC_VERSION/
+git clone https://github.com/chef/omnibus-software $HOME/cinc-full-$CINC_VERSION/
+exit 0
+#curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$CINC_VERSION.tar.xz --output cinc-full-$CINC_VERSION.tar.xz
 echo "==============================================================================="
 echo " UNPACKING SOURCES: cinc, $CINC_VERSION"
 echo "==============================================================================="
