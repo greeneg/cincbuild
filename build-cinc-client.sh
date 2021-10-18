@@ -68,8 +68,8 @@ echo "==========================================================================
 echo " DOWNLOADING SOURCES: cinc, $CINC_VERSION"
 echo "==============================================================================="
 cd $HOME/cinc-full-$CINC_VERSION
-git clone https://github.com/chef/chef.git $HOME/cinc-full-$CINC_VERSION/
-git clone https://github.com/chef/omnibus-software $HOME/cinc-full-$CINC_VERSION/
+git clone https://github.com/chef/chef.git $HOME/cinc-full-$CINC_VERSION/cinc-$CINC_VERSION
+git clone https://github.com/chef/omnibus-software $HOME/cinc-full-$CINC_VERSION/omnibus-software
 exit 0
 #curl --progress-bar http://downloads.cinc.sh/source/stable/cinc/cinc-full-$CINC_VERSION.tar.xz --output cinc-full-$CINC_VERSION.tar.xz
 echo "==============================================================================="
